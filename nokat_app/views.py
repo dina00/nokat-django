@@ -1,8 +1,8 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from . import forms
-# from nokat_app.models import
-from nokat_app.forms import UserForm
+from nokat_app.models import Post, Comment
+from nokat_app.forms import UserForm, FormPost, FormComment
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import authenticate, login, logout  # for later
 from django.contrib.auth.decorators import login_required
@@ -58,4 +58,17 @@ def user_login(request):
 
 
 def index(request):
-    return render(request, 'index.html')
+    posts = Post.objects.all()
+    if request.method == "POST":
+        post_form = FormPost(data=request.POST)
+        if post_form.is_valid():
+            post_obj=post_form.save(commit=False)
+            post_obj.user=request.user
+            post_obj.save()
+            messages.add_message(request, messages.SUCCESS,'Joke was added successfully')
+            return redirect('index')
+        else:
+            print(post_form.errors)
+    else:  # http request
+        post_form = FormPost()
+    return render(request, 'index.html', {'post_form': post_form,'posts': posts})

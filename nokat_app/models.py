@@ -1,5 +1,6 @@
 from django.db import models
 from django.db import models
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib import admin
 from django.core.exceptions import ValidationError
@@ -9,3 +10,20 @@ class UserInfo(models.Model):
 
     def __str__(self):
         return self.user.username
+
+class Post(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,blank=True, null=True)
+    content =  models.CharField(max_length=200)
+    votes = models.IntegerField(default=0)
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+            return self.content
+
+class Comment(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    content =  models.CharField(max_length=100)
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+            return self.content
