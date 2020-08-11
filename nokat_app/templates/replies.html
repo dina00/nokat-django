@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+{% extends "master.html" %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% block body_block %}
+
+<head>
+  <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+</head>
+
+<div class="jumbotron">
+  <table class="table">
+    <thead>
+      <th scope="col">User</th>
+      <th scope="col">Joke</th>
+      <th scope="col">Votes</th>
+      <th scope="col">Posted</th>
+    </thead>
+    <tr>
+      <td scope="row">{{post.user}}</td>
+      <td scope="row">{{post.content}}</td>
+      <td scope="row">{{post.votes}}</td>
+      <td scope="row">{{post.timestamp}}</td>
+    </tr>
+  </table>
+
+  <table class="table">
+    <thead>
+      <th scope="col">User</th>
+      <th scope="col">Comment</th>
+      <th scope="col">Posted</th>
+    </thead>
+    {% for i in replies %}
+    <tr>
+      <td scope="row">{{i.user}}</td>
+      <td scope="row">{{i.content}}</td>
+      <td scope="row">{{i.timestamp}}</td>
+    </tr>
+
+    {% endfor %}
+  </table>
+
+  <div class="form-group">
+    <div class='container'>
+      <form method="POST">
+        <div class="form-group">
+          {{comment_form|crispy}}
+          {% csrf_token %}
+          <input type="submit" class="btn btn-primary" value="Submit">
+        </div>
+      </form>
+    </div>
+  </div>
+
+  {% endblock %}

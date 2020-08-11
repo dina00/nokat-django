@@ -2,6 +2,7 @@
 {% extends "master.html" %}
 {% load crispy_forms_tags %}
 {% load static %}
+{% load my_extras %}
 {% block body_block %}
 
 <head>
@@ -11,9 +12,9 @@
 <div class="jumbotron">
 
   {% if request.user.is_authenticated %}
-  <h1>Hi Welcome {{ request.user.username|title}}</h1>
+  <h1> Welcome {{ request.user.username|title}}</h1>
   {% else %}
-  <h1>Hi Welcome</h1>
+  <h1>Welcome</h1>
   {% endif %}
   <div class="form-group">
     <div class='container'>
@@ -34,14 +35,17 @@
         <th scope="col">Posted</th>
       </thead>
       {% for i in posts reversed %}
+
       <tr>
         <td scope="row">{{i.user}}</td>
         <td scope="row">{{i.content}}</td>
-        <td scope="row">{{i.votes}}</td>
+        <td scope="row">{{i.number_of_upvotes|subtract:i.number_of_downvotes}}</td>
         <td scope="row">{{i.timestamp}}</td>
+        <td scope="row">&nbsp &nbsp<a href="{% url 'nokat_app:upvote' i.id %}" class="btn btn-info">up vote</a></td>
+        <td scope="row">&nbsp &nbsp<a href="{% url 'nokat_app:downvote' i.id %}" class="btn btn-info">down vote</a></td>
+        <td scope="row">&nbsp &nbsp<a href="{% url 'nokat_app:reply' i.id %}" class="btn btn-info">reply</a></td>
       </tr>
-
-      {% endfor %}
+{% endfor %}
     </table>
 
     {% endblock %}

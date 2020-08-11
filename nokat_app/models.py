@@ -14,7 +14,8 @@ class UserInfo(models.Model):
 class Post(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,blank=True, null=True)
     content =  models.CharField(max_length=200)
-    votes = models.IntegerField(default=0)
+    upvote = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="upvotes" ,)
+    downvote = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="downvotes" ,)
     timestamp = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -22,6 +23,7 @@ class Post(models.Model):
 
 class Comment(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)
     content =  models.CharField(max_length=100)
     timestamp = models.DateTimeField(auto_now_add=True)
 

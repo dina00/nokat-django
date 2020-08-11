@@ -8,6 +8,7 @@ from django.conf.urls import url
 # TEMPLATE TAGGING
 app_name= 'nokat_app'
 urlpatterns = [
-
-
+            path('reply/<int:id>', views.reply, name='reply'),
+            path('upvote/<int:id>', views.upvote, name='upvote'),
+            path('downvote/<int:id>', views.downvote, name='downvote'),
         ]

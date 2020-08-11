@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect
+from django.db.models import Count
 from django.http import HttpResponse
 from . import forms
 from nokat_app.models import Post, Comment
@@ -58,7 +59,8 @@ def user_login(request):
 
 
 def index(request):
-    posts = Post.objects.all()
+    # access the number of upvotes associated with a post using 'number_of_upvotes' attribute
+    posts = Post.objects.annotate(number_of_upvotes=Count('upvote',distinct=True)).annotate(number_of_downvotes=Count('downvote',distinct=True))
     if request.method == "POST":
         post_form = FormPost(data=request.POST)
         if post_form.is_valid():
@@ -71,4 +73,47 @@ def index(request):
             print(post_form.errors)
     else:  # http request
         post_form = FormPost()
-    return render(request, 'index.html', {'post_form': post_form,'posts': posts})
+    return render(request, 'index.html', {'post_form': post_form,'posts': posts,})
+
+def reply(request, id):
+    # get replies of this post
+    replies = Comment.objects.filter(post=id)
+    post = get_object_or_404(Post, id=id)
+    if request.method == "POST":
+        comment_form = FormComment(request.POST)
+        if comment_form.is_valid():
+            comment_obj=comment_form.save(commit=False)
+            comment_obj.user=request.user
+            comment_obj.post=post
+            comment_obj.save()
+            messages.add_message(request, messages.SUCCESS,'You replied!')
+            return redirect('nokat_app:reply',id)
+        else:
+            print(comment_form.errors)
+    else:  # http request
+        comment_form = FormComment()
+    return render(request, 'replies.html', {'post': post,'comment_form': comment_form, 'replies': replies})
+
+def upvote(request,id):
+    post = get_object_or_404(Post, id=id)
+    user = request.user
+    if user.is_authenticated:
+        if user in post.upvote.all():
+            # you  remove the user if double upvote
+            post.upvote.remove(user)
+        else:
+            post.upvote.add(user)
+
+    return redirect('index')
+
+
+def downvote(request,id):
+    post = get_object_or_404(Post, id=id)
+    user = request.user
+    if user.is_authenticated:
+        if user in post.downvote.all():
+            post.downvote.remove(user)
+        else:
+            post.downvote.add(user)
+
+    return redirect('index')
