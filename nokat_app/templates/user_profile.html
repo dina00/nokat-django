@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+{% extends "master.html" %}
+{% load my_extras %}
+  {% block body_block %}
+
+    <h2>User Profile {{posts.0.user}}</h2>
+    <!--message flashing-->
+
+    <div class="info">
+
+      {% csrf_token %}
+      {% if posts %}
+
+      <table class="table">
+        <thead>
+          <th scope="col">Joke</th>
+          <th scope="col">Votes</th>
+          <th scope="col">Posted</th>
+        </thead>
+        {% for i in posts reversed %}
+
+        <tr>
+          <td scope="row">{{i.content}}</td>
+          <td scope="row">{{i.number_of_upvotes|subtract:i.number_of_downvotes}}</td>
+          <td scope="row">{{i.timestamp}}</td>
+        </tr>
+        {% endfor %}
+
+        {% endif %}
+</table>
+
+
+      {% endblock %}

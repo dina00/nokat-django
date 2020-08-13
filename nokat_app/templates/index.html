@@ -19,33 +19,32 @@
   <div class="form-group">
     <div class='container'>
       <form method="POST">
-        <div class="form-group">
-          {{post_form|crispy}}
-          {% csrf_token %}
-          <input type="submit" class="btn btn-primary" value="Submit">
-        </div>
+        {% csrf_token %}
+        {{post_form.content}}
+        <input type="submit" class="btn btn-primary" value="Submit">
       </form>
     </div>
+  </div>
 
-    <table class="table">
-      <thead>
-        <th scope="col">User</th>
-        <th scope="col">Joke</th>
-        <th scope="col">Votes</th>
-        <th scope="col">Posted</th>
-      </thead>
-      {% for i in posts reversed %}
+  <table class="table">
+    <thead>
+      <th scope="col">User</th>
+      <th scope="col">Joke</th>
+      <th scope="col">Votes</th>
+      <th scope="col">Posted</th>
+    </thead>
+    {% for i in posts reversed %}
 
-      <tr>
-        <td scope="row">{{i.user}}</td>
-        <td scope="row">{{i.content}}</td>
-        <td scope="row">{{i.number_of_upvotes|subtract:i.number_of_downvotes}}</td>
-        <td scope="row">{{i.timestamp}}</td>
-        <td scope="row">&nbsp &nbsp<a href="{% url 'nokat_app:upvote' i.id %}" class="btn btn-info">up vote</a></td>
-        <td scope="row">&nbsp &nbsp<a href="{% url 'nokat_app:downvote' i.id %}" class="btn btn-info">down vote</a></td>
-        <td scope="row">&nbsp &nbsp<a href="{% url 'nokat_app:reply' i.id %}" class="btn btn-info">reply</a></td>
-      </tr>
-{% endfor %}
-    </table>
+    <tr>
+      <td scope="row"><a href="{% url 'nokat_app:user_profile' i.user.id %}">{{i.user}}</a></td>
+      <td scope="row">{{i.content}}</td>
+      <td scope="row">{{i.number_of_upvotes|subtract:i.number_of_downvotes}}</td>
+      <td scope="row">{{i.timestamp}}</td>
+      <td scope="row">&nbsp &nbsp<a href="{% url 'nokat_app:upvote' i.id %}" class="btn btn-info">up vote</a></td>
+      <td scope="row">&nbsp &nbsp<a href="{% url 'nokat_app:downvote' i.id %}" class="btn btn-info">down vote</a></td>
+      <td scope="row">&nbsp &nbsp<a href="{% url 'nokat_app:reply' i.id %}" class="btn btn-info">reply</a></td>
+    </tr>
+    {% endfor %}
+  </table>
 
-    {% endblock %}
+  {% endblock %}

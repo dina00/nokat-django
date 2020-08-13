@@ -117,3 +117,9 @@ def downvote(request,id):
             post.downvote.add(user)
 
     return redirect('index')
+
+
+def user_profile(request, id):
+    posts=Post.objects.filter(user__id=id).annotate(number_of_upvotes=Count('upvote',distinct=True)).annotate(number_of_downvotes=Count('downvote',distinct=True))
+
+    return render(request, 'user_profile.html', {'posts': posts})
