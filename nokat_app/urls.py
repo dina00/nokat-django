@@ -9,6 +9,7 @@ from django.conf.urls import url
 app_name= 'nokat_app'
 urlpatterns = [
             path('reply/<int:id>', views.reply, name='reply'),
+            path('joke_delete/<int:id>', views.joke_delete, name='joke_delete'),
             path('upvote/<int:id>', views.upvote, name='upvote'),
             path('downvote/<int:id>', views.downvote, name='downvote'),
             path('user_profile/<int:id>', views.user_profile, name='user_profile'),

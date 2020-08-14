@@ -242,3 +242,10 @@ def oldest_activity_posts(request):
         post_form = FormPost()
 
     return render(request, 'index.html', {'posts': posts,'post_form': post_form})
+
+
+def joke_delete(request, id):
+    instance = get_object_or_404(Post, id=id)
+    instance.delete()
+    messages.add_message(request, messages.SUCCESS,'Joke was deleted successfully')
+    return redirect('index')
