@@ -17,6 +17,7 @@ class Post(models.Model):
     upvote = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="upvotes" ,)
     downvote = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="downvotes" ,)
     timestamp = models.DateTimeField(auto_now_add=True)
+    updated_date = models.DateTimeField(blank=True, null=True)
 
     def __str__(self):
             return self.content

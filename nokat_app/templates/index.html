@@ -9,6 +9,29 @@
   <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
 </head>
 
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Sort By
+          </a>
+          <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <a class="dropdown-item" href="{% url 'index' %}">Most Recent</a>
+            <a class="dropdown-item" href="{% url 'nokat_app:least_recent_posts' %}">Oldest</a>
+            <a class="dropdown-item" href="{% url 'nokat_app:most_popular_posts' %}">Most Popular</a>
+            <a class="dropdown-item" href="{% url 'nokat_app:least_popular_posts' %}">Least Popular</a>
+              <a class="dropdown-item" href="{% url 'nokat_app:recent_activity_posts' %}">Recent Activity</a>
+              <a class="dropdown-item" href="{% url 'nokat_app:oldest_activity_posts' %}">Oldest Activity</a>
+          </div>
+        </li>
+      </div>
+    </ul>
+  </div>
+</nav>
+
 <div class="jumbotron">
 
   {% if request.user.is_authenticated %}
@@ -26,16 +49,21 @@
     </div>
   </div>
 
+
+
   <table class="table">
     <thead>
       <th scope="col">User</th>
       <th scope="col">Joke</th>
       <th scope="col">Votes</th>
       <th scope="col">Posted</th>
-    </thead>
-    {% for i in posts reversed %}
 
+    </thead>
     <tr>
+
+      {% for i in posts reversed %}
+
+
       <td scope="row"><a href="{% url 'nokat_app:user_profile' i.user.id %}">{{i.user}}</a></td>
       <td scope="row">{{i.content}}</td>
       <td scope="row">{{i.number_of_upvotes|subtract:i.number_of_downvotes}}</td>

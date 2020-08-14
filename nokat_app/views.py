@@ -10,8 +10,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse
 from django.contrib import messages
-from django.forms import formset_factory
-from django.forms import modelformset_factory
+from django.utils import timezone
 
 # Create your views here.
 
@@ -61,6 +60,7 @@ def user_login(request):
 def index(request):
     # access the number of upvotes associated with a post using 'number_of_upvotes' attribute
     posts = Post.objects.annotate(number_of_upvotes=Count('upvote',distinct=True)).annotate(number_of_downvotes=Count('downvote',distinct=True))
+    # most_recent=Post.objects.annotate(number_of_upvotes=Count('upvote',distinct=True)).annotate(number_of_downvotes=Count('downvote',distinct=True)).order_by('-timestamp')
     if request.method == "POST":
         post_form = FormPost(data=request.POST)
         if post_form.is_valid():
@@ -73,7 +73,12 @@ def index(request):
             print(post_form.errors)
     else:  # http request
         post_form = FormPost()
-    return render(request, 'index.html', {'post_form': post_form,'posts': posts,})
+    context={
+            'post_form': post_form,
+            'posts': posts,
+            # 'most_recent':most_recent,
+             }
+    return render(request, 'index.html', context)
 
 def reply(request, id):
     # get replies of this post
@@ -85,7 +90,9 @@ def reply(request, id):
             comment_obj=comment_form.save(commit=False)
             comment_obj.user=request.user
             comment_obj.post=post
+            post.updated_date = timezone.now()
             comment_obj.save()
+            post.save()
             messages.add_message(request, messages.SUCCESS,'You replied!')
             return redirect('nokat_app:reply',id)
         else:
@@ -103,6 +110,8 @@ def upvote(request,id):
             post.upvote.remove(user)
         else:
             post.upvote.add(user)
+        post.updated_date = timezone.now()
+        post.save()
 
     return redirect('index')
 
@@ -115,6 +124,8 @@ def downvote(request,id):
             post.downvote.remove(user)
         else:
             post.downvote.add(user)
+        post.updated_date = timezone.now()
+        post.save()
 
     return redirect('index')
 
@@ -123,3 +134,111 @@ def user_profile(request, id):
     posts=Post.objects.filter(user__id=id).annotate(number_of_upvotes=Count('upvote',distinct=True)).annotate(number_of_downvotes=Count('downvote',distinct=True))
 
     return render(request, 'user_profile.html', {'posts': posts})
+
+def most_recent_posts(request):
+    posts=Post.objects.annotate(number_of_upvotes=Count('upvote',distinct=True)).annotate(number_of_downvotes=Count('downvote',distinct=True)).order_by('-timestamp')
+
+    return render(request, 'index.html', {'posts': posts,})
+
+def least_recent_posts(request):
+    posts=Post.objects.annotate(number_of_upvotes=Count('upvote',distinct=True)).annotate(number_of_downvotes=Count('downvote',distinct=True)).order_by('-timestamp')
+    if request.method == "POST":
+        post_form = FormPost(data=request.POST)
+        if post_form.is_valid():
+            post_obj=post_form.save(commit=False)
+            post_obj.user=request.user
+            post_obj.save()
+            messages.add_message(request, messages.SUCCESS,'Joke was added successfully')
+            return redirect('index')
+        else:
+            print(post_form.errors)
+    else:  # http request
+        post_form = FormPost()
+
+    return render(request, 'index.html', {'posts': posts,'post_form': post_form})
+
+
+def most_popular_posts(request):
+    posts=Post.objects.annotate(number_of_upvotes=Count('upvote',distinct=True)).annotate(number_of_downvotes=Count('downvote',distinct=True)).annotate(like_diff=Count('upvote')-Count('downvote')).order_by('like_diff')
+    if request.method == "POST":
+        post_form = FormPost(data=request.POST)
+        if post_form.is_valid():
+            post_obj=post_form.save(commit=False)
+            post_obj.user=request.user
+            post_obj.save()
+            messages.add_message(request, messages.SUCCESS,'Joke was added successfully')
+            return redirect('index')
+        else:
+            print(post_form.errors)
+    else:  # http request
+        post_form = FormPost()
+
+    return render(request, 'index.html', {'posts': posts,'post_form': post_form})
+
+def least_popular_posts(request):
+    posts=Post.objects.annotate(number_of_upvotes=Count('upvote',distinct=True)).annotate(number_of_downvotes=Count('downvote',distinct=True)).annotate(like_diff=Count('upvote')-Count('downvote')).order_by('-like_diff')
+    if request.method == "POST":
+        post_form = FormPost(data=request.POST)
+        if post_form.is_valid():
+            post_obj=post_form.save(commit=False)
+            post_obj.user=request.user
+            post_obj.save()
+            messages.add_message(request, messages.SUCCESS,'Joke was added successfully')
+            return redirect('index')
+        else:
+            print(post_form.errors)
+    else:  # http request
+        post_form = FormPost()
+
+    return render(request, 'index.html', {'posts': posts,'post_form': post_form})
+
+def most_popular_posts(request):
+    posts=Post.objects.annotate(number_of_upvotes=Count('upvote',distinct=True)).annotate(number_of_downvotes=Count('downvote',distinct=True)).annotate(like_diff=Count('upvote')-Count('downvote')).order_by('like_diff')
+    if request.method == "POST":
+        post_form = FormPost(data=request.POST)
+        if post_form.is_valid():
+            post_obj=post_form.save(commit=False)
+            post_obj.user=request.user
+            post_obj.save()
+            messages.add_message(request, messages.SUCCESS,'Joke was added successfully')
+            return redirect('index')
+        else:
+            print(post_form.errors)
+    else:  # http request
+        post_form = FormPost()
+
+    return render(request, 'index.html', {'posts': posts,'post_form': post_form})
+
+def recent_activity_posts(request):
+    posts=Post.objects.annotate(number_of_upvotes=Count('upvote',distinct=True)).annotate(number_of_downvotes=Count('downvote',distinct=True)).order_by('updated_date')
+    if request.method == "POST":
+        post_form = FormPost(data=request.POST)
+        if post_form.is_valid():
+            post_obj=post_form.save(commit=False)
+            post_obj.user=request.user
+            post_obj.save()
+            messages.add_message(request, messages.SUCCESS,'Joke was added successfully')
+            return redirect('index')
+        else:
+            print(post_form.errors)
+    else:  # http request
+        post_form = FormPost()
+
+    return render(request, 'index.html', {'posts': posts,'post_form': post_form})
+
+def oldest_activity_posts(request):
+    posts=Post.objects.annotate(number_of_upvotes=Count('upvote',distinct=True)).annotate(number_of_downvotes=Count('downvote',distinct=True)).order_by('-updated_date')
+    if request.method == "POST":
+        post_form = FormPost(data=request.POST)
+        if post_form.is_valid():
+            post_obj=post_form.save(commit=False)
+            post_obj.user=request.user
+            post_obj.save()
+            messages.add_message(request, messages.SUCCESS,'Joke was added successfully')
+            return redirect('index')
+        else:
+            print(post_form.errors)
+    else:  # http request
+        post_form = FormPost()
+
+    return render(request, 'index.html', {'posts': posts,'post_form': post_form})
