@@ -27,7 +27,7 @@
       </div>
     </ul>
     <form action="{% url 'nokat_app:search' %}" class="form-inline my-2 my-lg-0">
-      <input class="form-control mr-sm-2" type="search" placeholder="Search for Joke or User" aria-label="Search" name="search_term" value="{{ search_term|escape }}">
+      <input class="form-control mr-sm-2" type="search" placeholder="Search ..." aria-label="Search" name="search_term" value="{{ search_term|escape }}">
 
       <button class="btn btn-outline-info my-2 my-sm-0" type="submit">Search</button>
     </form>
@@ -43,9 +43,12 @@
   {% endif %}
   <div class="form-group">
     <div class='container'>
-      <form method="POST" enctype="multipart/form-data">
+      <form method="POST" enctype="multipart/form-data" id="post-form">
         {% csrf_token %}
-        {{post_form.content}}
+        <div class="fieldWrapper" id="the_post">
+        {{post_form|crispy}}
+        </div>
+        <br>
         <input type="submit" class="btn btn-primary" value="Submit">
       </form>
     </div>
@@ -91,5 +94,7 @@
     </tr>
     {% endfor %}
   </table>
+
+  <script src="{% static 'scripts/main.js' %}"></script>
 
   {% endblock %}

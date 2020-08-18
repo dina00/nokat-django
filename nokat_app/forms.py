@@ -17,6 +17,13 @@ class FormPost(forms.ModelForm):
     class Meta():
         model = Post
         fields = ('content',)
+        widgets = {
+            'content': forms.TextInput(attrs={
+                'id': 'post-text',
+                'required': True,
+                'placeholder': 'Say something...'
+            }),
+            }
 
 class FormComment(forms.ModelForm):
 

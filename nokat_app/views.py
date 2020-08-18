@@ -13,7 +13,7 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse
 from django.contrib import messages
 from django.utils import timezone
-import collections
+import json
 # Create your views here.
 
 def register(request):
@@ -58,19 +58,19 @@ def user_login(request):
     else:
         return render(request, 'login.html', {})
 
-
+@login_required(login_url='/user_login/')
 def index(request):
     # access the number of upvotes associated with a post using 'number_of_upvotes' attribute
     posts = Post.objects.annotate(number_of_upvotes=Count('upvote',distinct=True)).annotate(number_of_downvotes=Count('downvote',distinct=True))
     # most_recent=Post.objects.annotate(number_of_upvotes=Count('upvote',distinct=True)).annotate(number_of_downvotes=Count('downvote',distinct=True)).order_by('-timestamp')
     if request.method == "POST":
+        response_data = {}
         post_form = FormPost(data=request.POST)
         if post_form.is_valid():
             post_obj=post_form.save(commit=False)
             post_obj.user=request.user
             post_obj.save()
             messages.add_message(request, messages.SUCCESS,'Joke was added successfully')
-            return redirect('index')
         else:
             print(post_form.errors)
     else:  # http request
@@ -82,6 +82,7 @@ def index(request):
              }
     return render(request, 'index.html', context)
 
+@login_required(login_url='/user_login/')
 def reply(request, id):
     # get replies of this post
     replies = Comment.objects.filter(post=id)
@@ -103,6 +104,7 @@ def reply(request, id):
         comment_form = FormComment()
     return render(request, 'replies.html', {'post': post,'comment_form': comment_form, 'replies': replies})
 
+@login_required(login_url='/user_login/')
 def upvote(request,id):
     post = get_object_or_404(Post, id=id)
     user = request.user
@@ -118,6 +120,7 @@ def upvote(request,id):
     return redirect('index')
 
 
+@login_required(login_url='/user_login/')
 def downvote(request,id):
     post = get_object_or_404(Post, id=id)
     user = request.user
@@ -132,16 +135,19 @@ def downvote(request,id):
     return redirect('index')
 
 
+@login_required(login_url='/user_login/')
 def user_profile(request, id):
     posts=Post.objects.filter(user__id=id).annotate(number_of_upvotes=Count('upvote',distinct=True)).annotate(number_of_downvotes=Count('downvote',distinct=True))
 
     return render(request, 'user_profile.html', {'posts': posts})
 
+@login_required(login_url='/user_login/')
 def most_recent_posts(request):
     posts=Post.objects.annotate(number_of_upvotes=Count('upvote',distinct=True)).annotate(number_of_downvotes=Count('downvote',distinct=True)).order_by('-timestamp')
 
     return render(request, 'index.html', {'posts': posts,})
 
+@login_required(login_url='/user_login/')
 def least_recent_posts(request):
     posts=Post.objects.annotate(number_of_upvotes=Count('upvote',distinct=True)).annotate(number_of_downvotes=Count('downvote',distinct=True)).order_by('-timestamp')
     if request.method == "POST":
@@ -160,6 +166,7 @@ def least_recent_posts(request):
     return render(request, 'index.html', {'posts': posts,'post_form': post_form})
 
 
+@login_required(login_url='/user_login/')
 def most_popular_posts(request):
     posts=Post.objects.annotate(number_of_upvotes=Count('upvote',distinct=True)).annotate(number_of_downvotes=Count('downvote',distinct=True)).annotate(like_diff=Count('upvote')-Count('downvote')).order_by('like_diff')
     if request.method == "POST":
@@ -177,6 +184,7 @@ def most_popular_posts(request):
 
     return render(request, 'index.html', {'posts': posts,'post_form': post_form})
 
+@login_required(login_url='/user_login/')
 def least_popular_posts(request):
     posts=Post.objects.annotate(number_of_upvotes=Count('upvote',distinct=True)).annotate(number_of_downvotes=Count('downvote',distinct=True)).annotate(like_diff=Count('upvote')-Count('downvote')).order_by('-like_diff')
     if request.method == "POST":
@@ -194,6 +202,7 @@ def least_popular_posts(request):
 
     return render(request, 'index.html', {'posts': posts,'post_form': post_form})
 
+@login_required(login_url='/user_login/')
 def most_popular_posts(request):
     posts=Post.objects.annotate(number_of_upvotes=Count('upvote',distinct=True)).annotate(number_of_downvotes=Count('downvote',distinct=True)).annotate(like_diff=Count('upvote')-Count('downvote')).order_by('like_diff')
     if request.method == "POST":
@@ -211,6 +220,7 @@ def most_popular_posts(request):
 
     return render(request, 'index.html', {'posts': posts,'post_form': post_form})
 
+@login_required(login_url='/user_login/')
 def recent_activity_posts(request):
     posts=Post.objects.annotate(number_of_upvotes=Count('upvote',distinct=True)).annotate(number_of_downvotes=Count('downvote',distinct=True)).order_by('updated_date')
     if request.method == "POST":
@@ -228,6 +238,7 @@ def recent_activity_posts(request):
 
     return render(request, 'index.html', {'posts': posts,'post_form': post_form})
 
+@login_required(login_url='/user_login/')
 def oldest_activity_posts(request):
     posts=Post.objects.annotate(number_of_upvotes=Count('upvote',distinct=True)).annotate(number_of_downvotes=Count('downvote',distinct=True)).order_by('-updated_date')
     if request.method == "POST":
@@ -246,6 +257,7 @@ def oldest_activity_posts(request):
     return render(request, 'index.html', {'posts': posts,'post_form': post_form})
 
 
+@login_required(login_url='/user_login/')
 def joke_delete(request, id):
     instance = get_object_or_404(Post, id=id)
     instance.delete()
@@ -253,6 +265,7 @@ def joke_delete(request, id):
     return redirect('index')
 
 
+@login_required(login_url='/user_login/')
 def search(request):
     search_term=request.GET.get('search_term','')
     posts=Post.objects.filter(content__icontains=search_term).all()
@@ -265,6 +278,7 @@ def search(request):
     return render(request, 'search_results.html', context)
 
 
+@login_required(login_url='/user_login/')
 def list_users(request):
     users=User.objects.all()
     votes_dict={}
