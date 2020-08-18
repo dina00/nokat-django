@@ -5,6 +5,8 @@ from . import forms
 from nokat_app.models import Post, Comment
 from nokat_app.forms import UserForm, FormPost, FormComment
 from django.shortcuts import get_object_or_404
+from django.conf import settings
+from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout  # for later
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect, HttpResponse
@@ -249,3 +251,15 @@ def joke_delete(request, id):
     instance.delete()
     messages.add_message(request, messages.SUCCESS,'Joke was deleted successfully')
     return redirect('index')
+
+
+def search(request):
+    search_term=request.GET.get('search_term','')
+    posts=Post.objects.filter(content__icontains=search_term).all()
+    users=User.objects.filter(username__icontains=search_term).all()
+    context={
+    'posts':posts,
+    'users':users,
+    'search_term':search_term,
+    }
+    return render(request, 'search_results.html', context)

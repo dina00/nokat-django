@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+{% extends "master.html" %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% block body_block %}
+
+
+<div class="jumbotron">
+  <h3> Search Results for {{search_term}}</h3>
+  {% if posts %}
+  <table class="table">
+    <thead>
+      <th scope="col">User</th>
+      <th scope="col">Joke</th>
+      <th scope="col">Posted</th>
+    </thead>
+    {% for i in posts %}
+    <tr>
+      <td scope="row">{{i.user}}</td>
+      <td scope="row">{{i.content}}</td>
+      <td scope="row">{{i.timestamp}}</td>
+    </tr>
+    {% endfor %}
+  </table>
+  {% endif %}
+
+  {% if users %}
+
+  <table class="table">
+    <thead>
+      <th scope="col">User</th>
+      {% for i in users %}
+      <tr>
+        <td scope="row">{{i}}</td>
+      </tr>
+      {% endfor %}
+  </table>
+  {% endif %}
+
+  {% if not users and not posts %}
+  <br>
+  <h5>No search results to display.</h5>
+  {% endif %}
+
+  {% endblock %}

@@ -5,9 +5,6 @@
 {% load my_extras %}
 {% block body_block %}
 
-<head>
-  <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
-</head>
 
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
@@ -29,6 +26,11 @@
         </li>
       </div>
     </ul>
+    <form action="{% url 'nokat_app:search' %}" class="form-inline my-2 my-lg-0">
+      <input class="form-control mr-sm-2" type="search" placeholder="Search for Joke or User" aria-label="Search" name="search_term" value="{{ search_term|escape }}">
+
+      <button class="btn btn-outline-info my-2 my-sm-0" type="submit">Search</button>
+    </form>
   </div>
 </nav>
 
@@ -41,14 +43,13 @@
   {% endif %}
   <div class="form-group">
     <div class='container'>
-      <form method="POST">
+      <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
         {{post_form.content}}
         <input type="submit" class="btn btn-primary" value="Submit">
       </form>
     </div>
   </div>
-
 
 
   <table class="table">
