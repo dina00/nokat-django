@@ -19,7 +19,6 @@ urlpatterns = [
             path('recent_activity_posts/', views.recent_activity_posts, name='recent_activity_posts'),
             path('oldest_activity_posts/', views.oldest_activity_posts, name='oldest_activity_posts'),
             path('search/', views.search, name='search'),
-    #'feed/' being the name of desired url, 'views.search' the
-    #name of your func-based view, and "name='home'" the template
-    #you're using.
+            path('list_users/', views.list_users, name='list_users'),
+
 ]

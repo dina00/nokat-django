@@ -13,7 +13,7 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse
 from django.contrib import messages
 from django.utils import timezone
-
+import collections
 # Create your views here.
 
 def register(request):
@@ -263,3 +263,17 @@ def search(request):
     'search_term':search_term,
     }
     return render(request, 'search_results.html', context)
+
+
+def list_users(request):
+    users=User.objects.all()
+    votes_dict={}
+    for user in users:
+        posts=Post.objects.filter(user=user).annotate(number_of_upvotes=Count('upvote',distinct=True)).annotate(number_of_downvotes=Count('downvote',distinct=True))
+        count=0 #reset after every user
+        for post in posts:
+            diff=post.number_of_upvotes-post.number_of_downvotes
+            count+=diff
+        votes_dict[user.username]=count
+
+    return render(request, 'list_users.html', {'users':users,'votes_dict':votes_dict})

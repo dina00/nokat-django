@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+{% extends "master.html" %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% load my_extras %}
+{% block body_block %}
+
+
+<div class="jumbotron">
+  <table class="table">
+    <thead>
+      <th scope="col">User</th>
+      <th scope="col">Total Posts</th>
+      <th scope="col">Total Votes</th>
+    </thead>
+    {% for user in users %}
+    <tr>
+      <td scope="row">{{user.username}}</td>
+      <td scope="row">{{user.post_set.count}}</td>
+      <td scope="row">{{votes_dict|lookup:user.username}}</td>
+    </tr>
+    {% endfor %}
+  </table>
+
+  {% endblock %}
