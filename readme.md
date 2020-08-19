@@ -14,5 +14,3 @@ This project consists of sharing a feed of jokes (nokat) where a user can post t
 6.  Run the project 
 `python manage.py runserver`.
 7. Type [http://localhost:8000](http://localhost:8000) into your browser's address bar and hit enter.
-### Note 
-- Make sure to clear your cache so that the static file can load properly.
