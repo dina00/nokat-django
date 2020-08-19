@@ -63,7 +63,7 @@ def user_login(request):
 @login_required(login_url='/user_login/')
 def index(request):
     response_data = {}
-    posts = Post.objects.annotate(number_of_upvotes=Count('upvote',distinct=True)).annotate(number_of_downvotes=Count('downvote',distinct=True))
+    posts=Post.objects.annotate(number_of_upvotes=Count('upvote',distinct=True)).annotate(number_of_downvotes=Count('downvote',distinct=True)).order_by('updated_date')
     if request.method == "POST":
         post_form = FormPost(data=request.POST)
         if post_form.is_valid():
