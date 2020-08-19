@@ -1,6 +1,32 @@
 $(function() {
 
+  // AJAX for posting
+function index() {
+    console.log("create post is working!") // sanity check
+    $.ajax({
+        url : "{% url 'index' %}", // the endpoint
+        type : "POST", // http method
+        data : { the_post : $('#post-text').val() }, // data sent with the post request
 
+        // handle a successful response
+        success : function(json) {
+
+            // window.open("/");
+           // window.location.href="{% url 'index' %}";
+           $('#post-text').val(''); // remove the value from the input
+            // window.location.href = json.url;
+            console.log(json); // log the returned json to the console
+            console.log("success"); // another sanity check
+            setTimeout(function(){document.location.href = "index.html;"},500);
+            // return false;
+        },
+
+        // handle a non-successful response
+        error : function(xhr,errmsg,err) {
+            $('#results').html("<div class='alert-box alert radius' data-alert>Oops! We have encountered an error: "+errmsg+
+                " <a href='#' class='close'>&times;</a></div>"); // add the error to the dom
+            console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
+        }
     // This function gets cookie with a given name
     function getCookie(name) {
         var cookieValue = null;

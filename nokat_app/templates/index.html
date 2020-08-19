@@ -12,7 +12,7 @@
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
 
         <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-sort-amount-asc" aria-hidden="true"></i>
             Sort By
           </a>
           <div class="dropdown-menu" aria-labelledby="navbarDropdown">
@@ -29,7 +29,7 @@
     <form action="{% url 'nokat_app:search' %}" class="form-inline my-2 my-lg-0">
       <input class="form-control mr-sm-2" type="search" placeholder="Search ..." aria-label="Search" name="search_term" value="{{ search_term|escape }}">
 
-      <button class="btn btn-outline-info my-2 my-sm-0" type="submit">Search</button>
+      <button class="btn btn-outline-info my-2 my-sm-0" type="submit"><i class="fa fa-search" aria-hidden="true"></i> Search</button>
     </form>
   </div>
 </nav>
@@ -41,15 +41,16 @@
   {% else %}
   <h1>Welcome</h1>
   {% endif %}
+  <!-- <ul id="talk"> -->
+
   <div class="form-group">
     <div class='container'>
-      <form method="POST" enctype="multipart/form-data" id="post-form">
+      <form method="POST" enctype="multipart/form-data" form action='/' id="post-form">
         {% csrf_token %}
         <div class="fieldWrapper" id="the_post">
-        {{post_form|crispy}}
+          {{ post_form.as_p }}
         </div>
-        <br>
-        <input type="submit" class="btn btn-primary" value="Submit">
+        <input type="submit" class="btn btn-primary" value="Post">
       </form>
     </div>
   </div>
@@ -72,11 +73,13 @@
       <td scope="row">{{i.content}}</td>
       <td scope="row">{{i.number_of_upvotes|subtract:i.number_of_downvotes}}</td>
       <td scope="row">{{i.timestamp}}</td>
-      <td scope="row">&nbsp &nbsp<a href="{% url 'nokat_app:upvote' i.id %}" class="btn btn-info">up vote</a></td>
-      <td scope="row">&nbsp &nbsp<a href="{% url 'nokat_app:downvote' i.id %}" class="btn btn-info">down vote</a></td>
-      <td scope="row">&nbsp &nbsp<a href="{% url 'nokat_app:reply' i.id %}" class="btn btn-info">reply</a></td>
+      <td scope="row">&nbsp &nbsp<a href="{% url 'nokat_app:upvote' i.id %}" class="btn btn-info"><i class="fa fa-thumbs-o-up" aria-hidden="true"></i>
+          up vote</a></td>
+      <td scope="row">&nbsp &nbsp<a href="{% url 'nokat_app:downvote' i.id %}" class="btn btn-info"><i class="fa fa-thumbs-o-down" aria-hidden="true"></i> down vote</a></td>
+      <td scope="row">&nbsp &nbsp<a href="{% url 'nokat_app:reply' i.id %}" class="btn btn-info"><i class="fa fa-reply" aria-hidden="true"></i> reply</a></td>
       {% if user.is_superuser %}
-      <td scope="row">&nbsp &nbsp<a href="#" class="btn btn-danger" data-toggle="modal" data-target="#delete-modal{{i.id}}">delete</a></td>
+      <td scope="row">&nbsp &nbsp<a href="#" class="btn btn-danger" data-toggle="modal" data-target="#delete-modal{{i.id}}"><i class="fa fa-trash" aria-hidden="true"></i>
+          delete</a></td>
       <div class="modal fade in" id="delete-modal{{i.id}}" tabindex="-1" role="dialog" aria-labelledby="delete-modal" aria-hidden="true">
         <div class="modal-dialog">
           <div class="modal-content">
@@ -95,6 +98,6 @@
     {% endfor %}
   </table>
 
-  <script src="{% static 'scripts/main.js' %}"></script>
-
+  <script src="{% static 'scripts/main.js' %}">
+  </script>
   {% endblock %}

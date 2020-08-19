@@ -14,6 +14,7 @@ from django.urls import reverse
 from django.contrib import messages
 from django.utils import timezone
 import json
+from django.http import JsonResponse
 # Create your views here.
 
 def register(request):
@@ -58,29 +59,30 @@ def user_login(request):
     else:
         return render(request, 'login.html', {})
 
+
 @login_required(login_url='/user_login/')
 def index(request):
-    # access the number of upvotes associated with a post using 'number_of_upvotes' attribute
+    response_data = {}
     posts = Post.objects.annotate(number_of_upvotes=Count('upvote',distinct=True)).annotate(number_of_downvotes=Count('downvote',distinct=True))
-    # most_recent=Post.objects.annotate(number_of_upvotes=Count('upvote',distinct=True)).annotate(number_of_downvotes=Count('downvote',distinct=True)).order_by('-timestamp')
     if request.method == "POST":
-        response_data = {}
         post_form = FormPost(data=request.POST)
         if post_form.is_valid():
             post_obj=post_form.save(commit=False)
             post_obj.user=request.user
             post_obj.save()
             messages.add_message(request, messages.SUCCESS,'Joke was added successfully')
-        else:
-            print(post_form.errors)
-    else:  # http request
+            response_data['content'] = post_obj.content
+            return redirect('index')
+        #     return JsonResponse(response_data)
+        # else:
+        #     return HttpResponse(
+        #     json.dumps({"nothing to see": "this isn't happening"}),
+        #     content_type="application/json"
+        # )
+    else:
         post_form = FormPost()
-    context={
-            'post_form': post_form,
-            'posts': posts,
-            # 'most_recent':most_recent,
-             }
-    return render(request, 'index.html', context)
+    return render(request, 'index.html', {'post_form': post_form, 'posts':posts})
+    #
 
 @login_required(login_url='/user_login/')
 def reply(request, id):
